@@ -20,7 +20,7 @@
   content: "";
   position: absolute;
   bottom: calc(-1 * var(--spacing));
-  left: calc(2 * var(--spacing));
+  left: var(--spacing);
   border-width: var(--spacing) var(--spacing) 0 0 ;
   border-style: solid;
   border-color: var(--received-bg) transparent;
@@ -42,7 +42,7 @@
   content: "";
   position: absolute;
   bottom: calc(-1 * var(--spacing));
-  right: calc(2 * var(--spacing));
+  right: var(--spacing);
   border-width: var(--spacing) 0 0 var(--spacing);
   border-style: solid;
   border-color: var(--sent-bg) transparent;

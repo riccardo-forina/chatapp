@@ -124,7 +124,7 @@ export default class WithConnection extends Component {
 
   updateHistoryCache(messages) {
     localStorage.setItem("history",
-      JSON.stringify(messages.slice(0, 10)));
+      JSON.stringify(messages.slice(-10)));
   }
 
   send({ command, ...payload}) {

@@ -10,12 +10,16 @@ const Message = ({ message, isReceived, isFaded, isThinking, isDeleted }) => {
     "is-faded": isFaded,
     "is-thinking": isThinking,
     "is-deleted": isDeleted
-  })
+  });
+  message = message
+    .replace(/\(smile\)/g, "&#128512;")
+    .replace(/\(wink\)/g, "&#128521;");
   return (
     <div className={cs}>
-      <div className="Message-bubble">
-        { message }
-      </div>
+      <div
+        className="Message-bubble"
+        dangerouslySetInnerHTML={{__html: message}}
+      />
     </div>
   );
 };
