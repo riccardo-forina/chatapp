@@ -23,11 +23,13 @@ export default class Messages extends Component {
   render() {
     const { children, isEmpty } = this.props;
     return (
-      <div
-        className={classnames("Messages", {"is-empty": isEmpty})}
-        ref={el => this.messages = el}
-      >
-        {children}
+      <div className={classnames("Messages", {"is-empty": isEmpty})}>
+        <div
+          className="Messages-wrapper"
+          ref={el => this.messages = el}
+        >
+          {children}
+        </div>
       </div>
     );
   }
