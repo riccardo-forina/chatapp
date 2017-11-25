@@ -6,14 +6,28 @@
   padding: var(--spacing);
   display: inline-flex;
   border-radius: var(--spacing);
-  margin-bottom: var(--spacing);
+  margin-bottom: calc(2 * var(--spacing));
   max-width: 50%;
+  position: relative;
 }
 
 .Message.is-received .Message-bubble {
   color: var(--received-color);
   background: var(--received-bg);
 }
+
+.Message.is-received .Message-bubble::after {
+  content: "";
+  position: absolute;
+  bottom: calc(-1 * var(--spacing));
+  left: calc(2 * var(--spacing));
+  border-width: var(--spacing) var(--spacing) 0 0 ;
+  border-style: solid;
+  border-color: var(--received-bg) transparent;
+  display: block;
+  width: 0;
+}
+
 
 .Message.is-sent {
   justify-content: flex-end;
@@ -22,6 +36,18 @@
 .Message.is-sent .Message-bubble {
   color: var(--sent-color);
   background: var(--sent-bg);
+}
+
+.Message.is-sent .Message-bubble::after {
+  content: "";
+  position: absolute;
+  bottom: calc(-1 * var(--spacing));
+  right: calc(2 * var(--spacing));
+  border-width: var(--spacing) 0 0 var(--spacing);
+  border-style: solid;
+  border-color: var(--sent-bg) transparent;
+  display: block;
+  width: 0;
 }
 
 .Message.is-thinking .Message-bubble {
