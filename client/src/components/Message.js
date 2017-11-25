@@ -1,9 +1,11 @@
 import React from "react";
 import PropTypes from "prop-types";
 import classnames from "classnames";
+import "./Message.css";
 
 const Message = ({ message, isReceived, isFaded, isThinking, isDeleted }) => {
   const cs = classnames("Message", {
+    "is-sent": !isReceived,
     "is-received": isReceived,
     "is-faded": isFaded,
     "is-thinking": isThinking,
@@ -11,7 +13,9 @@ const Message = ({ message, isReceived, isFaded, isThinking, isDeleted }) => {
   })
   return (
     <div className={cs}>
-      { message }
+      <div className="Message-bubble">
+        { message }
+      </div>
     </div>
   );
 };

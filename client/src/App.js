@@ -67,14 +67,19 @@ class App extends Component {
           <div className="App">
             <div className="App-header">
               { isGuestConnected
-                ? <span>Hi {myNick}, you are chatting with <strong>{guestNick}</strong></span>
-                : <span>No user connected :(</span> }
-              { isGuestTyping && <i>Typing a message...</i>}
+                ? <span>To: {guestNick}</span>
+                : <span>To: no user connected :(</span> }
             </div>
             <div className="App-body">
-              <Messages>
+              <Messages isEmpty={messages.length === 0 && !isGuestTyping}>
                 { messages.map((props, idx) =>
                   <Message key={idx} {...props} />) }
+                {isGuestTyping &&
+                  <Message
+                    message={"Typing a message"}
+                    isThinking
+                    isReceived
+                  /> }
               </Messages>
             </div>
             <div className="App-footer">

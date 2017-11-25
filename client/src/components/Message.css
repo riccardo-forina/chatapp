@@ -1,0 +1,30 @@
+.Message {
+  display: flex;
+}
+
+.Message-bubble {
+  padding: var(--spacing);
+  display: inline-flex;
+  border-radius: var(--spacing);
+  margin-bottom: var(--spacing);
+  max-width: 50%;
+}
+
+.Message.is-received .Message-bubble {
+  color: var(--received-color);
+  background: var(--received-bg);
+}
+
+.Message.is-sent {
+  justify-content: flex-end;
+}
+
+.Message.is-sent .Message-bubble {
+  color: var(--sent-color);
+  background: var(--sent-bg);
+}
+
+.Message.is-thinking .Message-bubble {
+  color: var(--typing-color);
+  font-style: italic;
+}

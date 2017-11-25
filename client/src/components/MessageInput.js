@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import classnames from "classnames";
+import './MessageInput.css';
 
 const MessageInput = ({ enabled, onBeginTyping, onSend }) => {
   const cs = classnames("MessageInput", {
@@ -9,6 +10,8 @@ const MessageInput = ({ enabled, onBeginTyping, onSend }) => {
   return (
     <div className={cs}>
       <textarea
+        className={"MessageInput-textarea"}
+        rows={1}
         disabled={!enabled}
         onChange={onBeginTyping}
         onKeyUp={ev => {
@@ -18,6 +21,7 @@ const MessageInput = ({ enabled, onBeginTyping, onSend }) => {
             ev.target.value = "";
           }
         }}
+        placeholder={"Send a message"}
       />
     </div>
   );

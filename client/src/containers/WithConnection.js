@@ -84,12 +84,13 @@ export default class WithConnection extends Component {
           });
           break;
         case "message": {
-          const updatedMessages = [{
-            message: payload.message,
-            isThinking: payload.isThinking,
-            isReceived: true
-          },
-            ...messages
+          const updatedMessages = [
+            ...messages,
+            {
+              message: payload.message,
+              isThinking: payload.isThinking,
+              isReceived: true
+            },
           ];
           this.setState({
             isGuestTyping: false,
@@ -169,12 +170,13 @@ export default class WithConnection extends Component {
       message,
       isThinking
     });
-    const updatedMessages = [{
+    const updatedMessages = [
+      ...messages,
+      {
         message,
         isThinking,
         isReceived: false
       },
-      ...messages
     ];
     this.setState({
       messages: updatedMessages

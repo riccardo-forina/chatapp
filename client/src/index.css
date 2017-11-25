@@ -1,5 +1,20 @@
-body {
-  margin: 0;
-  padding: 0;
-  font-family: sans-serif;
+@import "~normalize.css";
+
+:root {
+  --ui: #DEDFDE;
+  --bg: #EFF0EF;
+  --spacing: 10px;
+  --sent-bg: #75c38c;
+  --sent-color: #000;
+  --received-bg: #8ebcfe;
+  --received-color: #000;
+  --typing-color: #666;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }

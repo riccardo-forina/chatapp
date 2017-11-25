@@ -1,9 +1,34 @@
-import React from "react";
+import React, { Component } from "react";
+import PropTypes from "prop-types";
 import classnames from "classnames";
+import "./Messages.css";
 
-const Messages = ({ children }) =>
-  <div className={classnames("Messages", {"is-empty": React.Children.count(children) === 0 })}>
-    {children}
-  </div>;
+export default class Messages extends Component {
+  static propTypes = {
+    isEmpty: PropTypes.bool
+  };
 
-export default Messages;
+  componentDidUpdate() {
+    this.scrollToBottom();
+  }
+
+  componentDidMount() {
+    this.scrollToBottom();
+  }
+
+  scrollToBottom() {
+    this.messages.scrollTop = this.messages.scrollHeight;
+  }
+
+  render() {
+    const { children, isEmpty } = this.props;
+    return (
+      <div
+        className={classnames("Messages", {"is-empty": isEmpty})}
+        ref={el => this.messages = el}
+      >
+        {children}
+      </div>
+    );
+  }
+}

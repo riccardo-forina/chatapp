@@ -1,0 +1,15 @@
+.MessageInput {
+  padding: var(--spacing);
+  display: flex;
+}
+
+.MessageInput-textarea {
+  flex: 1;
+  border: 1px solid var(--ui);
+  padding: var(--spacing);
+  border-radius: var(--spacing);
+}
+
+.MessageInput-textarea:focus {
+  outline: none;
+}
