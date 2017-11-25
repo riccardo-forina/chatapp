@@ -22,7 +22,7 @@ export default class WithConnection extends Component {
       messages = JSON.parse(serializedMessages);
       myNick = JSON.parse(serializedMyNick);
     } catch (e) {
-      // nohop
+      // noop
     }
 
     this.state = {
@@ -54,7 +54,7 @@ export default class WithConnection extends Component {
     throw "TODO";
   }
 
-  sendTypingFeedback(typing = true) {
+  sendTypingFeedback() {
     throw "TODO";
   }
 
