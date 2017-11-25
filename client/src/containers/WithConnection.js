@@ -152,7 +152,7 @@ export default class WithConnection extends Component {
     });
   }
 
-  sendMessage({message, isThinking}) {
+  sendMessage({message, isThinking=false}) {
     const { messages } = this.state;
     this.send({
       command: "message",

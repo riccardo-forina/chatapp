@@ -31,6 +31,12 @@ class App extends Component {
             setNick(nick);
           }
           break;
+        case "think":
+          const [message] = args;
+          if (message && message.length > 0) {
+            sendMessage({ message, isThinking: true });
+          }
+          break;
       }
     } else {
       sendMessage({
