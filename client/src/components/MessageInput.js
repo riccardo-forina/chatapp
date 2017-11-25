@@ -15,6 +15,7 @@ const MessageInput = ({ enabled, onBeginTyping, onSend }) => {
           const keycode = (ev.keyCode ? ev.keyCode : ev.which);
           if (keycode === 13) {
             onSend(ev.target.value);
+            ev.target.value = "";
           }
         }}
       />

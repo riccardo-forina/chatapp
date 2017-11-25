@@ -27,10 +27,9 @@ export default class WithConnection extends Component {
     try {
       const serializedMessages =
         localStorage.getItem("history") || "[]";
-      const serializedMyNick =
-        localStorage.getItem("nick") || `"User ${userId}"`;
+      myNick =
+        localStorage.getItem("nick") || `User ${userId}`;
       messages = JSON.parse(serializedMessages);
-      myNick = JSON.parse(serializedMyNick);
     } catch (e) {
       // noop
     }
@@ -87,6 +86,7 @@ export default class WithConnection extends Component {
         case "message":
           const updatedMessages = [{
               message: payload.message,
+              isThinking: payload.isThinking,
               isReceived: true
             },
             ...messages
@@ -143,6 +143,7 @@ export default class WithConnection extends Component {
     this.setState({
       myNick: nick
     });
+    localStorage.setItem("nick", nick);
   }
 
   sendTypingFeedback() {
@@ -151,14 +152,16 @@ export default class WithConnection extends Component {
     });
   }
 
-  sendMessage(message) {
+  sendMessage({message, isThinking}) {
     const { messages } = this.state;
     this.send({
       command: "message",
-      message
+      message,
+      isThinking
     });
     const updatedMessages = [{
-        message: message,
+        message,
+        isThinking,
         isReceived: false
       },
       ...messages

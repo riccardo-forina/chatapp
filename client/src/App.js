@@ -20,7 +20,23 @@ class App extends Component {
     fadeLastMessage,
     setCountdown
   }) {
-    sendMessage(message);
+    message = message.slice(0, -1); // get rid of the newline
+
+    if (message.startsWith("/")) {
+      const [command, ...args] = message.slice(1).split(" ");
+      switch (command) {
+        case "nick":
+          const [nick] = args;
+          if (nick && nick.length > 0) {
+            setNick(nick);
+          }
+          break;
+      }
+    } else {
+      sendMessage({
+        message
+      });
+    }
   }
 
   render() {
