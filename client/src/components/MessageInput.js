@@ -11,9 +11,9 @@ const MessageInput = ({ enabled, onBeginTyping, onSend }) => {
       <textarea
         disabled={!enabled}
         onChange={onBeginTyping}
-        onKeyDown={ev => {
+        onKeyUp={ev => {
           const keycode = (ev.keyCode ? ev.keyCode : ev.which);
-          if (keycode === '13') {
+          if (keycode === 13) {
             onSend(ev.target.value);
           }
         }}

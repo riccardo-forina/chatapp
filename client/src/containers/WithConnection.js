@@ -59,7 +59,7 @@ export default class WithConnection extends Component {
     this.socket.addEventListener("open", this.hello);
 
     this.socket.addEventListener("message", (event) => {
-      const { isGuestConnected } = this.state;
+      const { isGuestConnected, messages } = this.state;
       const { command, payload } = JSON.parse(event.data);
       console.log("On message", command, payload);
 
@@ -84,6 +84,19 @@ export default class WithConnection extends Component {
             isGuestTyping: true
           });
           break;
+        case "message":
+          const updatedMessages = [{
+              message: payload.message,
+              isReceived: true
+            },
+            ...messages
+          ];
+          this.setState({
+            isGuestTyping: false,
+            messages: updatedMessages
+          });
+          this.updateHistoryCache(updatedMessages);
+          break;
         case "setnick":
           this.setState({
             guestNick: payload.nick
@@ -96,6 +109,11 @@ export default class WithConnection extends Component {
 
   componentWillUnmount() {
     this.socket.close();
+  }
+
+  updateHistoryCache(messages) {
+    localStorage.setItem("history",
+      JSON.stringify(messages.slice(0, 10)));
   }
 
   send({ command, ...payload}) {
@@ -131,11 +149,24 @@ export default class WithConnection extends Component {
     this.send({
       command: "typing",
     });
-
   }
 
   sendMessage(message) {
-    throw "TODO";
+    const { messages } = this.state;
+    this.send({
+      command: "message",
+      message
+    });
+    const updatedMessages = [{
+        message: message,
+        isReceived: false
+      },
+      ...messages
+    ];
+    this.setState({
+      messages: updatedMessages
+    });
+    this.updateHistoryCache(updatedMessages);
   }
 
   deleteLastMessage() {

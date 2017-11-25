@@ -20,7 +20,7 @@ class App extends Component {
     fadeLastMessage,
     setCountdown
   }) {
-    throw "TODO";
+    sendMessage(message);
   }
 
   render() {
@@ -48,8 +48,8 @@ class App extends Component {
             </div>
             <div className="App-body">
               <Messages>
-                { messages.map(({ id, ...props}) =>
-                  <Message key={id} {...props} />) }
+                { messages.map((props, idx) =>
+                  <Message key={idx} {...props} />) }
               </Messages>
             </div>
             <div className="App-footer">
