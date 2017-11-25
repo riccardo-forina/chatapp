@@ -44,6 +44,7 @@ export default class WithConnection extends Component {
       guestNick: undefined,
     };
 
+    this.hello = this.hello.bind(this);
     this.setNick = this.setNick.bind(this);
     this.sendTypingFeedback = this.sendTypingFeedback.bind(this);
     this.sendMessage = this.sendMessage.bind(this);
@@ -55,10 +56,46 @@ export default class WithConnection extends Component {
   componentDidMount() {
     this.socket = new WebSocket("ws://localhost:8080")
 
-    this.socket.addEventListener("open", () => {
-      const { myNick } = this.state;
-      this.setNick(myNick);
+    this.socket.addEventListener("open", this.hello);
+
+    this.socket.addEventListener("message", (event) => {
+      const { isGuestConnected } = this.state;
+      const { command, payload } = JSON.parse(event.data);
+      console.log("On message", command, payload);
+
+      switch (command) {
+        case "hello":
+          if (!isGuestConnected) {
+            this.setState({
+              isGuestConnected: true,
+              guestNick: payload.nick
+            });
+            this.hello();
+          }
+          break;
+        case "quit":
+          this.setState({
+            isGuestConnected: false,
+            guestNick: undefined
+          });
+          break;
+        case "typing":
+          this.setState({
+            isGuestTyping: true
+          });
+          break;
+        case "setnick":
+          this.setState({
+            guestNick: payload.nick
+          });
+          break;
+      }
+
     })
+  }
+
+  componentWillUnmount() {
+    this.socket.close();
   }
 
   send({ command, ...payload}) {
@@ -72,6 +109,14 @@ export default class WithConnection extends Component {
     }));
   }
 
+  hello() {
+    const { myNick } = this.state;
+    this.send({
+      command: "hello",
+      nick: myNick
+    });
+  }
+
   setNick(nick) {
     this.send({
       command: "setnick",
@@ -79,11 +124,14 @@ export default class WithConnection extends Component {
     });
     this.setState({
       myNick: nick
-    })
+    });
   }
 
   sendTypingFeedback() {
-    throw "TODO";
+    this.send({
+      command: "typing",
+    });
+
   }
 
   sendMessage(message) {

@@ -44,6 +44,7 @@ class App extends Component {
               { isGuestConnected
                 ? <span>Hi {myNick}, you are chatting with <strong>{guestNick}</strong></span>
                 : <span>No user connected :(</span> }
+              { isGuestTyping && <i>Typing a message...</i>}
             </div>
             <div className="App-body">
               <Messages>
@@ -54,7 +55,7 @@ class App extends Component {
             <div className="App-footer">
               <MessageInput
                 enabled={isGuestConnected}
-                onBeginTyping={_ => this.sendTypingFeedback()}
+                onBeginTyping={_ => sendTypingFeedback()}
                 onSend={(message) => this.onSendMessage({
                   message,
                   sendMessage,
