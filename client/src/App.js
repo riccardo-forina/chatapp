@@ -37,6 +37,9 @@ class App extends Component {
             sendMessage({ message, isThinking: true });
           }
           break;
+        case "oops":
+          deleteLastMessage();
+          break;
       }
     } else {
       sendMessage({

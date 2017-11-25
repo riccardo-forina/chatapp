@@ -83,12 +83,12 @@ export default class WithConnection extends Component {
             isGuestTyping: true
           });
           break;
-        case "message":
+        case "message": {
           const updatedMessages = [{
-              message: payload.message,
-              isThinking: payload.isThinking,
-              isReceived: true
-            },
+            message: payload.message,
+            isThinking: payload.isThinking,
+            isReceived: true
+          },
             ...messages
           ];
           this.setState({
@@ -97,6 +97,16 @@ export default class WithConnection extends Component {
           });
           this.updateHistoryCache(updatedMessages);
           break;
+        }
+        case "undo": {
+          const updatedMessages = messages.slice(1);
+          this.setState({
+            isGuestTyping: false,
+            messages: updatedMessages
+          });
+          this.updateHistoryCache(updatedMessages);
+          break;
+        }
         case "setnick":
           this.setState({
             guestNick: payload.nick
@@ -173,7 +183,15 @@ export default class WithConnection extends Component {
   }
 
   deleteLastMessage() {
-    throw "TODO";
+    const { messages } = this.state;
+    this.send({
+      command: "undo",
+    });
+    const updatedMessages = messages.slice(1);
+    this.setState({
+      messages: updatedMessages
+    });
+    this.updateHistoryCache(updatedMessages);
   }
 
   fadeLastMessage() {
