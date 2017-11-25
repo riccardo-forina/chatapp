@@ -40,22 +40,31 @@ class App extends Component {
           setCountdown,
         }) => (
           <div className="App">
-            <Messages>
-              { messages.map(({ id, ...props}) =>
-                <Message key={id} {...props} />) }
-            </Messages>
-            <MessageInput
-              enabled={isGuestConnected}
-              onBeginTyping={_ => this.sendTypingFeedback()}
-              onSend={(message) => this.onSendMessage({
-                message,
-                sendMessage,
-                setNick,
-                deleteLastMessage,
-                fadeLastMessage,
-                setCountdown
-              })}
-            />
+            <div className="App-header">
+              { isGuestConnected
+                ? <span>Hi {myNick}, you are chatting with <strong>{guestNick}</strong></span>
+                : <span>No user connected :(</span> }
+            </div>
+            <div className="App-body">
+              <Messages>
+                { messages.map(({ id, ...props}) =>
+                  <Message key={id} {...props} />) }
+              </Messages>
+            </div>
+            <div className="App-footer">
+              <MessageInput
+                enabled={isGuestConnected}
+                onBeginTyping={_ => this.sendTypingFeedback()}
+                onSend={(message) => this.onSendMessage({
+                  message,
+                  sendMessage,
+                  setNick,
+                  deleteLastMessage,
+                  fadeLastMessage,
+                  setCountdown
+                })}
+              />
+            </div>
           </div>
 
         )}

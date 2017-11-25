@@ -9,16 +9,26 @@ export default class WithConnection extends Component {
   constructor(props) {
     super(props);
 
-    let messages = [];
-    let userId;
-    let myNick;
+    // naive new/returning user check
+    let userId = localStorage.getItem("userId");
     try {
-      userId =
-        localStorage.getItem("userId") || `${new Date().getTime()}`;
+      if (!userId) {
+        userId = `${new Date().getTime() + Math.random()}`
+        localStorage.setItem("userId", userId);
+      }
+    } catch(e) {
+      throw new Error(`FATAL: can't set a unique user id. ${e.message}`);
+    }
+
+    let messages = [];
+    let myNick;
+
+    // session restoring
+    try {
       const serializedMessages =
         localStorage.getItem("history") || "[]";
       const serializedMyNick =
-        localStorage.getItem("nick") || `User ${userId}`;
+        localStorage.getItem("nick") || `"User ${userId}"`;
       messages = JSON.parse(serializedMessages);
       myNick = JSON.parse(serializedMyNick);
     } catch (e) {
@@ -43,15 +53,33 @@ export default class WithConnection extends Component {
   }
 
   componentDidMount() {
-    const socket = new WebSocket("ws://localhost:8080")
+    this.socket = new WebSocket("ws://localhost:8080")
 
-    socket.addEventListener("open", (event) => {
-      socket.send("Hello");
+    this.socket.addEventListener("open", () => {
+      const { myNick } = this.state;
+      this.setNick(myNick);
     })
   }
 
+  send({ command, ...payload}) {
+    const { userId } = this.state;
+    const ts = new Date().getTime();
+    this.socket.send(JSON.stringify({
+      ts,
+      userId,
+      command,
+      payload
+    }));
+  }
+
   setNick(nick) {
-    throw "TODO";
+    this.send({
+      command: "setnick",
+      nick
+    });
+    this.setState({
+      myNick: nick
+    })
   }
 
   sendTypingFeedback() {
