@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import WithConnection from "./containers/WithConnection";
 import './App.css';
 
 class App extends Component {
@@ -7,12 +7,25 @@ class App extends Component {
     return (
       <div className="App">
         <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Welcome to React</h1>
         </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+        <WithConnection
+          render={({
+            myNick,
+            messages,
+            isGuestConnected,
+            isGuestTyping,
+            guestNick,
+            setNick,
+            sendTypingFeedback,
+            sendMessage,
+            deleteLastMessage,
+            fadeLastMessage,
+            setCountdown,
+          }) => (
+            messages.map((m, idx) => <p key={idx}>{m}</p>)
+          )}
+        />
       </div>
     );
   }
