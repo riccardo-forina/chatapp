@@ -88,19 +88,13 @@ class App extends Component {
           <div className="App">
             <div className="App-header">
               { isGuestConnected
-                ? <span>To: {guestNick}</span>
+                ? <span>To: {guestNick} {isGuestTyping && <i>✍️</i>}</span>
                 : <span>To: no user connected :(</span> }
             </div>
             <div className="App-body">
               <Messages isEmpty={messages.length === 0 && !isGuestTyping}>
                 { messages.map((props, idx) =>
                   <Message key={idx} {...props} />) }
-                {isGuestTyping &&
-                  <Message
-                    message={"Typing a message"}
-                    isThinking
-                    isReceived
-                  /> }
                 {countdown &&
                   <Message
                     message={`${countdown.left}...`}

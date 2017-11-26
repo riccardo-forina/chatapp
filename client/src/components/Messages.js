@@ -1,7 +1,20 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import classnames from "classnames";
+import { CSSTransition, TransitionGroup } from "react-transition-group";
 import "./Messages.css";
+
+
+const MessagesTransition = ({ children, ...props }) => (
+  <CSSTransition
+    {...props}
+    timeout={800}
+    classNames="MessagesTransition"
+  >
+    {children}
+  </CSSTransition>
+);
+
 
 export default class Messages extends Component {
   static propTypes = {
@@ -28,7 +41,13 @@ export default class Messages extends Component {
           className="Messages-wrapper"
           ref={el => this.messages = el}
         >
-          {children}
+          <TransitionGroup>
+            {React.Children.toArray(children).map((c, idx) =>
+              <MessagesTransition key={idx}>
+                {c}
+              </MessagesTransition>
+            )}
+          </TransitionGroup>
         </div>
       </div>
     );
