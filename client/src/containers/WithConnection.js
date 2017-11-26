@@ -100,7 +100,7 @@ export default class WithConnection extends Component {
           break;
         }
         case "undo": {
-          const updatedMessages = messages.slice(1);
+          const updatedMessages = messages.slice(0, -1);
           this.setState({
             isGuestTyping: false,
             messages: updatedMessages
@@ -189,7 +189,7 @@ export default class WithConnection extends Component {
     this.send({
       command: "undo",
     });
-    const updatedMessages = messages.slice(1);
+    const updatedMessages = messages.slice(0, -1);
     this.setState({
       messages: updatedMessages
     });
