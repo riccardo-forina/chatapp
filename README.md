@@ -17,6 +17,7 @@ First start the server app
 
 ```
 cd server
+npm install
 npm start
 ```
 
@@ -24,7 +25,15 @@ Then start the client app
 
 ```
 cd client
+npm install
 npm start
 ```
 
 You can now point your browser to http://localhost:3000
+
+## Testing the app
+
+```
+cd client
+CI=true npm test
+```
