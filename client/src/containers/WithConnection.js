@@ -66,6 +66,7 @@ export default class WithConnection extends Component {
         case "hello":
           if (!isGuestConnected) {
             this.setState({
+              isGuestTyping: false,
               isGuestConnected: true,
               guestNick: payload.nick
             });
@@ -74,6 +75,7 @@ export default class WithConnection extends Component {
           break;
         case "quit":
           this.setState({
+            isGuestTyping: false,
             isGuestConnected: false,
             guestNick: undefined
           });
@@ -110,6 +112,7 @@ export default class WithConnection extends Component {
         }
         case "setnick":
           this.setState({
+            isGuestTyping: false,
             guestNick: payload.nick
           });
           break;
