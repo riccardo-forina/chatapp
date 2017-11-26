@@ -6,8 +6,10 @@
   --spacing: 10px;
   --sent-bg: #75c38c;
   --sent-color: #000;
+  --sent-highlight-bg: #5CAA73;
   --received-bg: #8ebcfe;
   --received-color: #000;
+  --received-highlight-bg: #75A3E5;
   --typing-color: #666;
 }
 

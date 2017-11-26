@@ -91,6 +91,7 @@ export default class WithConnection extends Component {
             {
               message: payload.message,
               isThinking: payload.isThinking,
+              isHighlighted: payload.isHighlighted,
               isReceived: true
             },
           ];
@@ -182,18 +183,20 @@ export default class WithConnection extends Component {
     });
   }
 
-  sendMessage({message, isThinking=false}) {
+  sendMessage({message, isThinking=false, isHighlighted=false}) {
     const { messages } = this.state;
     this.send({
       command: "message",
       message,
-      isThinking
+      isThinking,
+      isHighlighted
     });
     const updatedMessages = [
       ...messages,
       {
         message,
         isThinking,
+        isHighlighted,
         isReceived: false
       },
     ];

@@ -25,18 +25,27 @@ class App extends Component {
     if (message.startsWith("/")) {
       const [command, ...args] = message.slice(1).split(" ");
       switch (command) {
-        case "nick":
+        case "nick": {
           const [nick] = args;
           if (nick && nick.length > 0) {
             setNick(nick);
           }
           break;
-        case "think":
+        }
+        case "think": {
           const [message] = args;
           if (message && message.length > 0) {
-            sendMessage({ message, isThinking: true });
+            sendMessage({message, isThinking: true});
           }
           break;
+        }
+        case "highlight": {
+          const [message] = args;
+          if (message && message.length > 0) {
+            sendMessage({message, isHighlighted: true});
+          }
+          break;
+        }
         case "oops":
           deleteLastMessage();
           break;
