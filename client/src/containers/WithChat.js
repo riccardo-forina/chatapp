@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 
-export default class WithConnection extends Component {
+export default class WithChat extends Component {
   static propTypes = {
     render: PropTypes.func.isRequired
   };
@@ -43,6 +43,7 @@ export default class WithConnection extends Component {
       guestNick: undefined,
     };
 
+    this.onSocketMessage = this.onSocketMessage.bind(this);
     this.hello = this.hello.bind(this);
     this.setNick = this.setNick.bind(this);
     this.sendTypingFeedback = this.sendTypingFeedback.bind(this);
@@ -57,89 +58,117 @@ export default class WithConnection extends Component {
 
     this.socket.addEventListener("open", this.hello);
 
-    this.socket.addEventListener("message", (event) => {
-      const { isGuestConnected, messages } = this.state;
-      const { command, payload } = JSON.parse(event.data);
-      console.log("On message", command, payload);
-
-      switch (command) {
-        case "hello":
-          if (!isGuestConnected) {
-            this.setState({
-              isGuestTyping: false,
-              isGuestConnected: true,
-              guestNick: payload.nick
-            });
-            this.hello();
-          }
-          break;
-        case "quit":
-          this.setState({
-            isGuestTyping: false,
-            isGuestConnected: false,
-            guestNick: undefined
-          });
-          break;
-        case "typing":
-          this.setState({
-            isGuestTyping: true
-          });
-          break;
-        case "message": {
-          const updatedMessages = [
-            ...messages,
-            {
-              message: payload.message,
-              isThinking: payload.isThinking,
-              isHighlighted: payload.isHighlighted,
-              isReceived: true
-            },
-          ];
-          this.setState({
-            isGuestTyping: false,
-            messages: updatedMessages
-          });
-          this.updateHistoryCache(updatedMessages);
-          break;
-        }
-        case "undo": {
-          const updatedMessages = messages.slice(0, -1);
-          this.setState({
-            isGuestTyping: false,
-            messages: updatedMessages
-          });
-          this.updateHistoryCache(updatedMessages);
-          break;
-        }
-        case "fadelast": {
-          const [lastMessage] = messages.slice(-1);
-          const updatedMessages = [
-            ...messages.slice(0, -1),
-            {
-              ...lastMessage,
-              isFaded: true
-            },
-          ];
-          this.setState({
-            isGuestTyping: false,
-            messages: updatedMessages
-          });
-          this.updateHistoryCache(updatedMessages);
-          break;
-        }
-        case "setnick":
-          this.setState({
-            isGuestTyping: false,
-            guestNick: payload.nick
-          });
-          break;
-      }
-
-    })
+    this.socket.addEventListener("message", this.onSocketMessage)
   }
 
   componentWillUnmount() {
     this.socket.close();
+  }
+
+  onSocketMessage(event) {
+    const { command, payload } = JSON.parse(event.data);
+    console.log("On message", command, payload);
+
+    switch (command) {
+      case "hello":
+        this.onHello(payload)
+        break;
+      case "quit":
+        this.onQuit();
+        break;
+      case "typing":
+        this.onTyping()
+        break;
+      case "message":
+        this.onMessage({...payload, isReceived: true});
+        break;
+      case "undo":
+        this.onUndo(payload);
+        break;
+      case "fadelast":
+        this.onFadeLast()
+        break;
+      case "setnick":
+        this.onSetGuestNick(payload);
+        break;
+    }
+  }
+
+  onHello({ nick }) {
+    const { isGuestConnected } = this.state;
+    if (!isGuestConnected) {
+      this.setState({
+        isGuestTyping: false,
+        isGuestConnected: true,
+        guestNick: nick
+      });
+      this.hello();
+    }
+  }
+
+  onQuit() {
+    this.setState({
+      isGuestTyping: false,
+      isGuestConnected: false,
+      guestNick: undefined
+    });
+  }
+
+  onTyping() {
+    this.setState({
+      isGuestTyping: true
+    });
+  }
+
+  onMessage({ message, isThinking, isHighlighted, isReceived }) {
+    const { messages } = this.state;
+    const updatedMessages = [
+      ...messages,
+      {
+        message,
+        isThinking,
+        isHighlighted,
+        isReceived,
+      },
+    ];
+    this.setState({
+      isGuestTyping: false,
+      messages: updatedMessages
+    });
+  }
+
+  onUndo() {
+    const { messages } = this.state;
+    const updatedMessages = messages.slice(0, -1);
+    this.setState({
+      isGuestTyping: false,
+      messages: updatedMessages
+    });
+    this.updateHistoryCache(updatedMessages);
+  }
+
+  onFadeLast() {
+    const { messages } = this.state;
+    const [lastMessage] = messages.slice(-1);
+    const updatedMessages = [
+      ...messages.slice(0, -1),
+      {
+        ...lastMessage,
+        isFaded: true
+      },
+    ];
+    this.setState({
+      isGuestTyping: false,
+      messages: updatedMessages
+    });
+    this.updateHistoryCache(updatedMessages);
+  }
+
+  onSetGuestNick({ nick }) {
+    this.setState({
+      isGuestTyping: false,
+      guestNick: nick
+    });
   }
 
   updateHistoryCache(messages) {
@@ -184,38 +213,20 @@ export default class WithConnection extends Component {
   }
 
   sendMessage({message, isThinking=false, isHighlighted=false}) {
-    const { messages } = this.state;
     this.send({
       command: "message",
       message,
       isThinking,
       isHighlighted
     });
-    const updatedMessages = [
-      ...messages,
-      {
-        message,
-        isThinking,
-        isHighlighted,
-        isReceived: false
-      },
-    ];
-    this.setState({
-      messages: updatedMessages
-    });
-    this.updateHistoryCache(updatedMessages);
+    this.onMessage({ message, isThinking, isHighlighted, isReceived: false });
   }
 
   deleteLastMessage() {
-    const { messages } = this.state;
     this.send({
       command: "undo",
     });
-    const updatedMessages = messages.slice(0, -1);
-    this.setState({
-      messages: updatedMessages
-    });
-    this.updateHistoryCache(updatedMessages);
+    this.onUndo();
   }
 
   fadeLastMessage() {
@@ -224,20 +235,8 @@ export default class WithConnection extends Component {
       this.send({
         command: "fadelast",
       });
-      const [lastMessage] = messages.slice(-1);
-      const updatedMessages = [
-        ...messages.slice(0, -1),
-        {
-          ...lastMessage,
-          isFaded: true
-        },
-      ];
-      this.setState({
-        messages: updatedMessages
-      });
-      this.updateHistoryCache(updatedMessages);
+      this.onFadeLast();
     }
-
   }
 
   setCountdown(duration, url) {

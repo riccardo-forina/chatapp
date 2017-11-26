@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import WithConnection from "./containers/WithConnection";
+import WithChat from "./containers/WithChat";
 import Messages from "./components/Messages";
 import Message from "./components/Message";
 import MessageInput from "./components/MessageInput";
@@ -62,7 +62,7 @@ class App extends Component {
 
   render() {
     return (
-      <WithConnection
+      <WithChat
         render={({
           myNick,
           messages,
