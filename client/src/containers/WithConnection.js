@@ -53,7 +53,7 @@ export default class WithConnection extends Component {
   }
 
   componentDidMount() {
-    this.socket = new WebSocket("ws://localhost:8080")
+    this.socket = new WebSocket(`ws://${document.location.hostname}:8080`)
 
     this.socket.addEventListener("open", this.hello);
 
