@@ -52,6 +52,14 @@ class App extends Component {
         case "fadelast":
           fadeLastMessage();
           break;
+        case "countdown": {
+          let [duration, url] = args;
+          duration = parseInt(duration, 10);
+          if (duration && url && duration > 0 && url.length > 0 && url.match(/^http[s]?:\/\/.+/)) {
+            setCountdown({duration, url});
+          }
+          break;
+        }
       }
     } else {
       sendMessage({
@@ -69,6 +77,7 @@ class App extends Component {
           isGuestConnected,
           isGuestTyping,
           guestNick,
+          countdown,
           setNick,
           sendTypingFeedback,
           sendMessage,
@@ -89,6 +98,12 @@ class App extends Component {
                 {isGuestTyping &&
                   <Message
                     message={"Typing a message"}
+                    isThinking
+                    isReceived
+                  /> }
+                {countdown &&
+                  <Message
+                    message={`${countdown.left}...`}
                     isThinking
                     isReceived
                   /> }

@@ -41,7 +41,10 @@ export default class WithChat extends Component {
       isGuestConnected: false,
       isGuestTyping: false,
       guestNick: undefined,
+      countdown: undefined,
     };
+
+    this._countdownInterval = null;
 
     this.onSocketMessage = this.onSocketMessage.bind(this);
     this.hello = this.hello.bind(this);
@@ -90,6 +93,9 @@ export default class WithChat extends Component {
         break;
       case "setnick":
         this.onSetGuestNick(payload);
+        break;
+      case "countdown":
+        this.onCountdown(payload);
         break;
     }
   }
@@ -192,6 +198,44 @@ export default class WithChat extends Component {
     });
   }
 
+  onCountdown({ duration, url }) {
+    this.stopCountdown();
+    this._countdownInterval = setInterval(() => {
+      const { countdown } = this.state;
+      console.log("Countdown ticker", countdown);
+      const left = countdown.left - 1;
+      if (left <= 0) {
+        this.stopCountdown();
+        window.open(countdown.url, "_blank");
+        this.setState({
+          countdown: undefined
+        });
+      } else {
+        this.setState({
+          countdown: {
+            ...countdown,
+            left
+          }
+        })
+      }
+    }, 1000);
+    this.setState({
+      isGuestTyping: false,
+      countdown: {
+        duration,
+        url,
+        left: duration,
+      }
+    });
+  }
+
+  stopCountdown() {
+    if (this._countdownInterval) {
+      clearInterval(this._countdownInterval);
+      this._countdownInterval = undefined;
+    }
+  }
+
   updateHistoryCache(messages) {
     localStorage.setItem("history",
       JSON.stringify(messages.slice(-10)));
@@ -267,8 +311,12 @@ export default class WithChat extends Component {
     }
   }
 
-  setCountdown(duration, url) {
-    throw "TODO";
+  setCountdown({duration, url}) {
+    this.send({
+      command: "countdown",
+      duration,
+      url
+    });
   }
 
   render() {
@@ -279,6 +327,7 @@ export default class WithChat extends Component {
       isGuestConnected,
       isGuestTyping,
       guestNick,
+      countdown
     } = this.state;
 
     return render({
@@ -287,6 +336,7 @@ export default class WithChat extends Component {
       isGuestConnected,
       isGuestTyping,
       guestNick,
+      countdown,
       setNick: this.setNick,
       sendTypingFeedback: this.sendTypingFeedback,
       sendMessage: this.sendMessage,
