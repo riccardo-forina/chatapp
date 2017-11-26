@@ -48,7 +48,7 @@ export default class WithChat extends Component {
     this.setNick = this.setNick.bind(this);
     this.sendTypingFeedback = this.sendTypingFeedback.bind(this);
     this.sendMessage = this.sendMessage.bind(this);
-    this.deleteLastMessage = this.deleteLastMessage.bind(this);
+    this.deleteLastSentMessage = this.deleteLastSentMessage.bind(this);
     this.fadeLastMessage = this.fadeLastMessage.bind(this);
     this.setCountdown = this.setCountdown.bind(this);
   }
@@ -66,7 +66,7 @@ export default class WithChat extends Component {
   }
 
   onSocketMessage(event) {
-    const { command, payload } = JSON.parse(event.data);
+    const { command, ...payload } = JSON.parse(event.data);
     console.log("On message", command, payload);
 
     switch (command) {
@@ -83,7 +83,7 @@ export default class WithChat extends Component {
         this.onMessage({...payload, isReceived: true});
         break;
       case "undo":
-        this.onUndo(payload);
+        this.onGuestUndo(payload);
         break;
       case "fadelast":
         this.onFadeLast()
@@ -120,11 +120,13 @@ export default class WithChat extends Component {
     });
   }
 
-  onMessage({ message, isThinking, isHighlighted, isReceived }) {
+  onMessage({ ts, id, message, isThinking, isHighlighted, isReceived }) {
     const { messages } = this.state;
     const updatedMessages = [
       ...messages,
       {
+        ts,
+        id,
         message,
         isThinking,
         isHighlighted,
@@ -135,16 +137,35 @@ export default class WithChat extends Component {
       isGuestTyping: false,
       messages: updatedMessages
     });
+    this.updateHistoryCache(updatedMessages)
   }
 
-  onUndo() {
+  onGuestUndo({ messageId }) {
     const { messages } = this.state;
-    const updatedMessages = messages.slice(0, -1);
+    const updatedMessages = messages
+      .filter(m => m.id !== messageId);
     this.setState({
       isGuestTyping: false,
       messages: updatedMessages
     });
     this.updateHistoryCache(updatedMessages);
+  }
+
+  onUndo() {
+    const { messages } = this.state;
+    const lastSentMessage = messages.reduceRight(
+      (acc, message, idx) => acc || (!message.isReceived ? message: null),
+      null
+    );
+    if (lastSentMessage) {
+      const updatedMessages = messages
+        .filter(m => m.id !== lastSentMessage.id);
+      this.setState({
+        messages: updatedMessages
+      });
+      this.updateHistoryCache(updatedMessages);
+      return lastSentMessage;
+    }
   }
 
   onFadeLast() {
@@ -179,12 +200,16 @@ export default class WithChat extends Component {
   send({ command, ...payload}) {
     const { userId } = this.state;
     const ts = new Date().getTime();
-    this.socket.send(JSON.stringify({
+    const id = `${ts}${Math.random()}}`;
+    const msg = {
+      ...payload,
       ts,
+      id,
       userId,
       command,
-      payload
-    }));
+    };
+    this.socket.send(JSON.stringify(msg));
+    return msg;
   }
 
   hello() {
@@ -213,20 +238,23 @@ export default class WithChat extends Component {
   }
 
   sendMessage({message, isThinking=false, isHighlighted=false}) {
-    this.send({
+    const {id, ts} = this.send({
       command: "message",
       message,
       isThinking,
       isHighlighted
     });
-    this.onMessage({ message, isThinking, isHighlighted, isReceived: false });
+    this.onMessage({ ts, id, message, isThinking, isHighlighted, isReceived: false });
   }
 
-  deleteLastMessage() {
-    this.send({
-      command: "undo",
-    });
-    this.onUndo();
+  deleteLastSentMessage() {
+    const deletedMessage = this.onUndo();
+    if (deletedMessage) {
+      this.send({
+        command: "undo",
+        messageId: deletedMessage.id
+      });
+    }
   }
 
   fadeLastMessage() {
@@ -262,7 +290,7 @@ export default class WithChat extends Component {
       setNick: this.setNick,
       sendTypingFeedback: this.sendTypingFeedback,
       sendMessage: this.sendMessage,
-      deleteLastMessage: this.deleteLastMessage,
+      deleteLastSentMessage: this.deleteLastSentMessage,
       fadeLastMessage: this.fadeLastMessage,
       setCountdown: this.setCountdown,
     });

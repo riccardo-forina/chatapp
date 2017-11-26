@@ -16,7 +16,7 @@ class App extends Component {
     message,
     sendMessage,
     setNick,
-    deleteLastMessage,
+    deleteLastSentMessage,
     fadeLastMessage,
     setCountdown
   }) {
@@ -47,7 +47,7 @@ class App extends Component {
           break;
         }
         case "oops":
-          deleteLastMessage();
+          deleteLastSentMessage();
           break;
         case "fadelast":
           fadeLastMessage();
@@ -72,7 +72,7 @@ class App extends Component {
           setNick,
           sendTypingFeedback,
           sendMessage,
-          deleteLastMessage,
+          deleteLastSentMessage,
           fadeLastMessage,
           setCountdown,
         }) => (
@@ -102,7 +102,7 @@ class App extends Component {
                   message,
                   sendMessage,
                   setNick,
-                  deleteLastMessage,
+                  deleteLastSentMessage,
                   fadeLastMessage,
                   setCountdown
                 })}
