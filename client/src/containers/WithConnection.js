@@ -110,6 +110,22 @@ export default class WithConnection extends Component {
           this.updateHistoryCache(updatedMessages);
           break;
         }
+        case "fadelast": {
+          const [lastMessage] = messages.slice(-1);
+          const updatedMessages = [
+            ...messages.slice(0, -1),
+            {
+              ...lastMessage,
+              isFaded: true
+            },
+          ];
+          this.setState({
+            isGuestTyping: false,
+            messages: updatedMessages
+          });
+          this.updateHistoryCache(updatedMessages);
+          break;
+        }
         case "setnick":
           this.setState({
             isGuestTyping: false,
@@ -200,7 +216,25 @@ export default class WithConnection extends Component {
   }
 
   fadeLastMessage() {
-    throw "TODO";
+    const { messages } = this.state;
+    if (messages.length > 0) {
+      this.send({
+        command: "fadelast",
+      });
+      const [lastMessage] = messages.slice(-1);
+      const updatedMessages = [
+        ...messages.slice(0, -1),
+        {
+          ...lastMessage,
+          isFaded: true
+        },
+      ];
+      this.setState({
+        messages: updatedMessages
+      });
+      this.updateHistoryCache(updatedMessages);
+    }
+
   }
 
   setCountdown(duration, url) {

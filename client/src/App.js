@@ -40,6 +40,9 @@ class App extends Component {
         case "oops":
           deleteLastMessage();
           break;
+        case "fadelast":
+          fadeLastMessage();
+          break;
       }
     } else {
       sendMessage({

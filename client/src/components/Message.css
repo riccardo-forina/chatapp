@@ -33,6 +33,10 @@
   justify-content: flex-end;
 }
 
+.Message.is-faded .Message-bubble {
+  opacity: 0.1;
+}
+
 .Message.is-sent .Message-bubble {
   color: var(--sent-color);
   background: var(--sent-bg);
